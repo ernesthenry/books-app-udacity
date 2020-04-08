@@ -11,25 +11,25 @@ class SearchList extends Component {
     books : []
   }
 
-  searchBooks = (query) => {
-    BooksAPI.search(query)
-    .then((books) => {
-      if (books){
-        for(let index = 0; index < books.length; index++){
-          this.props.books.map(book => {
-            if(books[index].id === book.id){
-              books[index].shelf = book.shelf;
+  searchBooks = (searchItem) => {
+    BooksAPI.search(searchItem)
+        .then(books => {
+            if (books) {
+                for (let index = 0; index < books.length; index++) {
+                    this.props.books.map(book => {
+                        if (books[index].id === book.id) {
+                            books[index].shelf = book.shelf;
+                        }
+                        return books[index]
+                    })
+                }
             }
-            return books[index]
-          })
-        }
-      }
-      this.setState({
-        books: books
-      })
-    })
+            this.setState({
+                books: books
+            })
+        })
+}
 
-  }
     
   render() {
     const { updateBookState } = this.props
@@ -37,12 +37,14 @@ class SearchList extends Component {
     return (
     <div className="search-books">
       <div className="search-books-bar">
-        <Link className="close-search" to = '/'>Close</Link>
+        <Link className="close-search" to='/'>Close</Link>
           <div className="search-books-input-wrapper">
               <input 
               type="text" 
               placeholder="Search by title or author"
-              onChange={(event) => this.searchBooks(event.target.value)}
+              onChange={(event) => {
+                this.searchBooks(event.target.value)
+              }}
               />
           </div>
         </div>
