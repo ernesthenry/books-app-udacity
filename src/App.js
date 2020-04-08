@@ -7,22 +7,23 @@ import MainPage from './components/MainPage'
 
 class BooksApp extends Component {
   state={
-    BookList: []
+    books: []
   }
 
   componentDidMount(){
     BooksAPI.getAll()
-    .then((BookList) => {
-      this.setState((BookList) => ({
-        BookList
-      }))      
+    .then((books) => {
+      this.setState((books) => ({
+        books
+      }))  
+      console.log(books)    
     }) 
   }
 
   updateBook = (book, shelf) => {
     BooksAPI.update(book,shelf)
     .then((books)  =>{
-       const newBooks = this.state.books.map((b) => {
+       let newBooks = this.state.books.map((b) => {
          if(book.id === b.id){
            book.shelf = shelf
            return book;
@@ -41,32 +42,31 @@ class BooksApp extends Component {
     .then(books =>{
       BooksAPI.get(book.id)
       .then(book => {
-         const newBook = this.state.books.filter((b) => b.id !== book.id);
+         let newBook = this.state.books.filter((b) => b.id !== book.id);
          this.setState(() => ({
            books: [...newBook, book]
          }))
       })
     })
     }
-  
 
 
-  
   render() {
     return (
       <div className="app">
+        {this.state.books}
         <div >
-          <Route exact path='/' render = {
+          <Route exact path='/' render={
             () => (
-              <MainPage  updateBookState={this.updateBook} books={this.state.BookList}/>
+              <MainPage  updateBookState={this.updateBook} books={this.state.books}/>
             )
           }
           />
      
           <Route 
-          path ="/search" render = {
+          path="/search" render={
             () => (
-              <SearchList  updateBookState={this.addBook} books={this.state.BookList}/>
+              <SearchList  updateBookState={this.addBook}  searchBooks={this.searchBooks} books={this.state.books}/>
             )
           }
           />
