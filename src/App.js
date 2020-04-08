@@ -54,7 +54,6 @@ class BooksApp extends Component {
   render() {
     return (
       <div className="app">
-        {this.state.books}
         <div >
           <Route exact path='/' render={
             () => (
