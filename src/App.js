@@ -1,79 +1,102 @@
-import React, { Component } from 'react'
-import * as BooksAPI from './BooksAPI'
-import './App.css'
-import { Route } from 'react-router-dom'
-import SearchList from './components/SearchList'
-import MainPage from './components/MainPage'
+import React, {Component} from 'react';
+import * as BooksAPI from './BooksAPI';
+import './App.css';
+import {Route} from 'react-router-dom';
+import SearchList from './components/SearchList';
+import MainPage from './components/MainPage';
 
 class BooksApp extends Component {
-  state={
-    books: []
-  }
+  state = {
+    books: [],
+  };
 
-  componentDidMount(){
-    BooksAPI.getAll()
-    .then((books) => {
+  componentDidMount() {
+    BooksAPI.getAll().then((books) => {
       this.setState(() => ({
-        books: books
-      }))  
-    }) 
+        books: books,
+      }));
+    });
   }
 
   updateBook = (book, shelf) => {
-    BooksAPI.update(book,shelf)
-    .then((books)  =>{
-       let newBooks = this.state.books.map((b) => {
-         if(book.id === b.id){
-           book.shelf = shelf
-           return book;
-         } else{
-              return b
-         }
+    BooksAPI.update(book, shelf).then((books) => {
+      let newBooks = this.state.books.map((b) => {
+        if (book.id === b.id) {
+          book.shelf = shelf;
+          return book;
+        } else {
+          return b;
+        }
       });
-      this.setState(() =>({
-        books: newBooks
-      }))
-    })
-  }
+      this.setState(() => ({
+        books: newBooks,
+      }));
+    });
+  };
 
-  addBook = (book,shelf) =>{
-    BooksAPI.update(book,shelf)
-    .then(books =>{
-      BooksAPI.get(book.id)
-      .then(book => {
-         let newBook = this.state.books.filter((b) => b.id !== book.id);
-         this.setState(() => ({
-           books: [...newBook, book]
-         }))
+  addBook = (book, shelf) => {
+    BooksAPI.update(book, shelf).then((books) => {
+      BooksAPI.get(book.id).then((book) => {
+        let newBook = this.state.books.filter((b) => b.id !== book.id);
+        this.setState(() => ({
+          books: [...newBook, book],
+        }));
+      });
+    });
+  };
+
+  onSelfChange = (book, shelf) => {
+    BooksAPI.update(book, shelf)
+    .then((books) => {
+      let newShelf = this.state.books.map((b) => {
+        if(book.id === b.id){
+          book.shelf = shelf
+        }
+        else if(book.shelf === 'none'){
+          return addBook
+        }
+        else if(book.shelf === 'currentlyReading'  || book.shelf === 'wantToRead' || book.shelf === 'Read'){
+          return updateBook
+        }
+        else{
+          return b
+        }
       })
+       this.setState({
+        books: newSelf
     })
-    }
-
-
+     
+  })
+ 
   render() {
     return (
       <div className="app">
-        <div >
-          <Route exact path='/' render = {
-            () => (
-              <MainPage  updateBookState={this.updateBook} books={this.state.books}/>
-            )
-          }
+        <div>
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <MainPage
+                updateBookState={this.updateBook}
+                books={this.state.books}
+              />
+            )}
           />
-     
-          <Route 
-          path ="/search" render = {
-            () => (
-              <SearchList  updateBookState={this.addBook}  searchBooks={this.searchBooks} books={this.state.books}/>
-            )
-          }
+
+          <Route
+            path="/search"
+            render={() => (
+              <SearchList
+                updateBookState={this.addBook}
+                searchBooks={this.searchBooks}
+                books={this.state.books}
+              />
+            )}
           />
-        </div> 
+        </div>
       </div>
-    )
+    );
   }
 }
 
-
-export default BooksApp
-
+export default BooksApp;
